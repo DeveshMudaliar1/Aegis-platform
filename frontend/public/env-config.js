@@ -1,0 +1,1 @@
+window.ENV = { VITE_API_URL: '', VITE_USE_MOCK: 'true' };

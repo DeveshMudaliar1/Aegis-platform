@@ -1,0 +1,23 @@
+{
+
+"nodes": [],
+
+"edges": [],
+
+"vix_score": 88.0,
+
+"drift_info": {
+
+"table": "users",
+
+"detected_change": "Column Rename: user_id -> u_id",
+
+"impact_count": 2
+
+},
+
+"message": "Chaos Injected (Survival Mode)",
+
+"infected_nodes": ["Revenue_Dashboard", "Churn_Model", "Exec_Report"]
+
+}

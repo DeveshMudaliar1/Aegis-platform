@@ -1,0 +1,49 @@
+// Data Pipeline Schema
+digraph {
+	rankdir=LR splines=ortho
+	s1 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1e3a8a"><font color="#fff"><b>Postgres (Main)</b></font></td></tr>
+            <tr><td align="left" port="id">id</td></tr><tr><td align="left" port="raw_payload">raw_payload</td></tr><tr><td align="left" port="created_at">created_at</td></tr>
+        </table>> shape=none]
+	s2 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1e3a8a"><font color="#fff"><b>Stripe API</b></font></td></tr>
+            <tr><td align="left" port="cus_id">cus_id</td></tr><tr><td align="left" port="amount">amount</td></tr><tr><td align="left" port="currency">currency</td></tr><tr><td align="left" port="status">status</td></tr>
+        </table>> shape=none]
+	st1 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#581c87"><font color="#fff"><b>dbt_stg_users</b></font></td></tr>
+            <tr><td align="left" port="user_id">user_id</td></tr><tr><td align="left" port="id">id</td></tr><tr><td align="left" port="email">email</td></tr><tr><td align="left" port="is_active">is_active</td></tr>
+        </table>> shape=none]
+	st2 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#581c87"><font color="#fff"><b>dbt_stg_payments</b></font></td></tr>
+            <tr><td align="left" port="payment_id">payment_id</td></tr><tr><td align="left" port="cus_id">cus_id</td></tr><tr><td align="left" port="usd_amount">usd_amount</td></tr>
+        </table>> shape=none]
+	dw1 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1a1a1a"><font color="#fff"><b>Fact_Transactions</b></font></td></tr>
+            <tr><td align="left" port="txn_hash">txn_hash</td></tr><tr><td align="left" port="id">id</td></tr><tr><td align="left" port="usd_amount">usd_amount</td></tr><tr><td align="left" port="timestamp">timestamp</td></tr>
+        </table>> shape=none]
+	dw2 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1a1a1a"><font color="#fff"><b>Dim_User_Profiles</b></font></td></tr>
+            <tr><td align="left" port="user_id">user_id</td></tr><tr><td align="left" port="email">email</td></tr><tr><td align="left" port="tier">tier</td></tr><tr><td align="left" port="geo">geo</td></tr>
+        </table>> shape=none]
+	c1 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1a1a1a"><font color="#fff"><b>Rev Dashboard</b></font></td></tr>
+            <tr><td align="left" port="usd_amount">usd_amount</td></tr><tr><td align="left" port="tier">tier</td></tr><tr><td align="left" port="mrr">mrr</td></tr><tr><td align="left" port="arr">arr</td></tr>
+        </table>> shape=none]
+	c2 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1a1a1a"><font color="#fff"><b>Fraud AI Model</b></font></td></tr>
+            <tr><td align="left" port="txn_hash">txn_hash</td></tr><tr><td align="left" port="usd_amount">usd_amount</td></tr><tr><td align="left" port="risk_score">risk_score</td></tr>
+        </table>> shape=none]
+	c3 [label=<<table border="0" cellborder="1" cellspacing="0" cellpadding="4">
+            <tr><td bgcolor="#1a1a1a"><font color="#fff"><b>Churn Predictor</b></font></td></tr>
+            <tr><td align="left" port="user_id">user_id</td></tr><tr><td align="left" port="tier">tier</td></tr><tr><td align="left" port="p_churn">p_churn</td></tr>
+        </table>> shape=none]
+	s1 -> st1 [label=id]
+	s2 -> st2 [label=cus_id]
+	st1 -> dw2 [label=email]
+	st1 -> dw1 [label=id]
+	st2 -> dw1 [label=usd_amount]
+	dw2 -> c1 [label=tier]
+	dw1 -> c1 [label=usd_amount]
+	dw1 -> c2 [label=txn_hash]
+	dw2 -> c3 [label=user_id]
+}
